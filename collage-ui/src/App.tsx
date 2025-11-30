@@ -3,10 +3,7 @@
 import { useState, useMemo } from "react";
 import { ReactPhotoCollage } from "react-photo-collage";
 
-const layoutPresets: Record<
-  number,
-  { layout: number[]; label: string }[]
-> = {
+const layoutPresets: Record<number, { layout: number[]; label: string }[]> = {
   2: [
     { layout: [2], label: "1 row, 2 images" },
     { layout: [1, 1], label: "2 rows, 1+1" },
@@ -58,9 +55,7 @@ function getLayoutsForCount(count: number) {
 }
 
 function App() {
-  const [imageCount, setImageCount] = useState<number | "">(
-    7
-  );
+  const [imageCount, setImageCount] = useState<number | "">(7);
   const [selectedCount, setSelectedCount] = useState(7);
 
   const layouts = useMemo(
@@ -125,9 +120,7 @@ function App() {
               value={imageCount}
               onChange={(e) =>
                 setImageCount(
-                  e.target.value === ""
-                    ? ""
-                    : Number(e.target.value)
+                  e.target.value === "" ? "" : Number(e.target.value)
                 )
               }
               style={{
@@ -219,8 +212,8 @@ function App() {
                       opacity: 0.7,
                     }}
                   >
-                    Recreate this pattern in PPT using a 16:9 slide
-                    and {selectedCount} image placeholders.
+                    Recreate this pattern in PPT using a 16:9 slide and{" "}
+                    {selectedCount} image placeholders.
                   </div>
                 </div>
               );

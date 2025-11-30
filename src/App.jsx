@@ -1,7 +1,12 @@
+// src/App.tsx
+// @ts-nocheck
 import { useState, useMemo } from "react";
 import { ReactPhotoCollage } from "react-photo-collage";
 
-const layoutPresets = {
+const layoutPresets: Record<
+  number,
+  { layout: number[]; label: string }[]
+> = {
   2: [
     { layout: [2], label: "1 row, 2 images" },
     { layout: [1, 1], label: "2 rows, 1+1" },
@@ -36,25 +41,26 @@ const layoutPresets = {
   ],
 };
 
-// Create placeholder photos just so the layout is visible.
-// In PPT you'll ignore these images and only copy the pattern.
-const createDummyPhotos = (count) =>
+const createDummyPhotos = (count: number) =>
   Array.from({ length: count }, (_, i) => ({
     source: `https://picsum.photos/800/600?random=${i + 1}`,
   }));
 
-function getLayoutsForCount(count) {
+function getLayoutsForCount(count: number) {
   const n = Number(count);
   if (!n || n < 2) return [];
   if (layoutPresets[n]) return layoutPresets[n];
 
-  // Fallback: generic layout if not pre-defined
-  const rows = n <= 4 ? [n] : [Math.floor(n / 2), n - Math.floor(n / 2)];
+  const firstRow = Math.floor(n / 2);
+  const rows = n <= 4 ? [n] : [firstRow, n - firstRow];
+
   return [{ layout: rows, label: `${rows.length} rows: ${rows.join(" + ")}` }];
 }
 
 function App() {
-  const [imageCount, setImageCount] = useState(7);
+  const [imageCount, setImageCount] = useState<number | "">(
+    7
+  );
   const [selectedCount, setSelectedCount] = useState(7);
 
   const layouts = useMemo(
@@ -67,9 +73,9 @@ function App() {
     [selectedCount]
   );
 
-  const handleShowLayouts = (e) => {
+  const handleShowLayouts = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!imageCount || imageCount < 2) return;
+    if (!imageCount || Number(imageCount) < 2) return;
     setSelectedCount(Number(imageCount));
   };
 
@@ -78,7 +84,8 @@ function App() {
       style={{
         minHeight: "100vh",
         padding: "24px",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        fontFamily:
+          "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
         background: "#0f172a",
         color: "#e5e7eb",
       }}
@@ -113,10 +120,16 @@ function App() {
             Number of images:{" "}
             <input
               type="number"
-              min="2"
-              max="12"
+              min={2}
+              max={12}
               value={imageCount}
-              onChange={(e) => setImageCount(e.target.value)}
+              onChange={(e) =>
+                setImageCount(
+                  e.target.value === ""
+                    ? ""
+                    : Number(e.target.value)
+                )
+              }
               style={{
                 width: "80px",
                 padding: "6px 8px",
@@ -153,7 +166,8 @@ function App() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(260px, 1fr))",
               gap: "16px",
             }}
           >
@@ -178,7 +192,12 @@ function App() {
                       "0 10px 25px rgba(15,23,42,0.9), 0 0 0 1px rgba(15,23,42,0.8)",
                   }}
                 >
-                  <div style={{ marginBottom: "8px", fontSize: "13px" }}>
+                  <div
+                    style={{
+                      marginBottom: "8px",
+                      fontSize: "13px",
+                    }}
+                  >
                     <strong>{config.label}</strong>{" "}
                     <span style={{ opacity: 0.6 }}>
                       (layout: [{config.layout.join(", ")}])
@@ -200,8 +219,8 @@ function App() {
                       opacity: 0.7,
                     }}
                   >
-                    Recreate this pattern in PPT using a 16:9 slide and{" "}
-                    {selectedCount} image placeholders.
+                    Recreate this pattern in PPT using a 16:9 slide
+                    and {selectedCount} image placeholders.
                   </div>
                 </div>
               );
